@@ -1,10 +1,11 @@
 import React from 'react'
 import './Contact.css'
+import { Link } from 'react-router-dom'
 const Contact = () => {
   return (
     <div class="container">
-      <span class="big-circle"></span>
-      <img src="img/shape.png" class="square" alt="" />
+      {/* <span class="big-circle"></span>
+      <img src="img/shape.png" class="square" alt="" /> */}
       <div class="form">
         <div class="contact-info">
           <h3 class="title">Let's get in touch</h3>
@@ -31,25 +32,25 @@ const Contact = () => {
           <div class="social-media">
             <p>Connect with us :</p>
             <div class="social-icons">
-              <a href="#">
+              <Link to="#">
                 <i class="fab fa-facebook-f"></i>
-              </a>
-              <a href="#">
+              </Link>
+              <Link to="#">
                 <i class="fab fa-twitter"></i>
-              </a>
-              <a href="#">
+              </Link>
+              <Link to="#">
                 <i class="fab fa-instagram"></i>
-              </a>
-              <a href="#">
+              </Link>
+              <Link to="#">
                 <i class="fab fa-linkedin-in"></i>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
 
         <div class="contact-form">
-          <span class="circle one"></span>
-          <span class="circle two"></span>
+          {/* <span class="circle one"></span>
+          <span class="circle two"></span> */}
 
           <form action="index.html" autocomplete="off">
             <h3 class="title">Contact us</h3>

@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './checkout.css'
-const Checkout = () => {
+import { Navigate, useSearchParams } from 'react-router-dom';
+const Checkout = ({user}) => {
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const [searchParams] = useSearchParams();
+  let ticketId = searchParams.get('ticketId');
+  ticketId = parseInt(ticketId);
+  const[ticketPurchase,setTicketPurchase] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here (e.g., sending data to backend)
+    const response = await fetch("https://blockchainticketing-production.up.railway.app/ticket/buy",{
+      method:"post",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${localStorage.getItem("jwt")}`
+      },
+      body:JSON.stringify({ticketId})
+    });
+    if(response.ok){
+      setTicketPurchase(true);
+    }
+    else{
+      console.log("error while purchasing ticket");
+    }
   };
 
-  return (
+  useEffect(()=>{
+    return ()=>{
+      setTicketPurchase(false);
+    }
+  })
 
+  return (
+    <>
+    {ticketPurchase && <Navigate to={"/orders"}></Navigate>}
+    {!user && <Navigate to={"/"}></Navigate>}
+    {!ticketId && <Navigate to={"/"}></Navigate>}
     <div className="checkout-container">
         
       <h2>Checkout</h2>
@@ -40,6 +67,7 @@ const Checkout = () => {
         <button type="submit">Submit Payment</button>
       </form>
     </div>
+    </>
   );
 }
 

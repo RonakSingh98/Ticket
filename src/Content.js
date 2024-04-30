@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import photo1 from './images/ab.jpg';
 import photo2 from './images/pngegg.png';
 import photo3 from './images/main.jpg';
@@ -12,30 +12,51 @@ import p7 from './images/7.jpg'
 import p8 from './images/8.jpg'
 import p9 from './images/9.jpg'
 import p10 from './images/10.jpg'
-import { Link, Route } from 'react-router-dom';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import './content.css'
-const Content = () => {
+import { Buffer } from 'buffer';
 
-  const user = {
-    username: "Mandori",
-    role: "vendor" 
+window.Buffer = Buffer;
+
+const Content = ({user}) => {
+
+  const [tickets,setTickets] = useState   ([]);
+  const navigate = useNavigate();
+
+  const gotToNewPage = (ticketId) => {
+    // window.location.to = '/checkout';
+    navigate(`/checkout?ticketId=${ticketId}`);
   };
-  
-  const gotToNewPage = () => {
-    window.location.href = '/checkout';
-  };
+
+  const convertToUrl = (dataObj)=>{
+    const {buffer,mimeType} = dataObj;
+    const b = Buffer.from(buffer.data);
+    const blob = new Blob([b],{mimetype:mimeType});
+    return URL.createObjectURL(blob);
+  }
+
+  useEffect(()=>{
+    (async ()=>{
+      // const response = await fetch("https://blockchainticketing-production.up.railway.app/ticket/tickets")
+    const response = await fetch("https://blockchainticketing-production.up.railway.app/ticket/tickets");
+    if(response.ok){
+      const {data} = await response.json();
+      setTickets(data);
+    }
+    })()
+  },[])
   return (
     
     <div>
       <nav>
       <ul>
-        <li><a href="#">My Profile</a></li>
-        <li><a href="#s1">Home</a></li>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/orders">My Orders</a></li>
-        <li><a href="/contact">Contact Us</a></li>
-        {user.role === 'vendor' && <li><a href="/newevent">Sell Tickets</a></li>}
+        {/* <li><Link to="#">My Profile</Link></li> */}
+        <li><Link to="#s1">Home</Link></li>
+        {!user && <li><Link to="/login">Login</Link></li>}
+        {user && <li><Link to="/orders">My Orders</Link></li>}
+        <li><Link to="/contact">Contact Us</Link></li>
+        {user && user.role=== 'admin' && <li><Link to="/admin">Admin Dashboard</Link></li>}
+        {user && user.role === 'vendor' && <li><Link to="/newevent">Sell Tickets</Link></li>}
         
       </ul>
       </nav>
@@ -47,65 +68,15 @@ const Content = () => {
       <div>
           <h3 className='hh'>Popular Events </h3>
         <div className='pop' id='s1'>
-          <div>
+          {tickets && tickets.map((ticket)=>(
+            <div>
             <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={photo1}></img>
-            <h4>Harmonic Nights: A Melody</h4>
-            <h4>Saturday, May 4th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
+            <img className='photos' src={convertToUrl(ticket.image)}></img>
+            <h4>{ticket.name}</h4>
+            <h4>{new Date(ticket.showDate).toDateString()}</h4>
+            <button onClick={()=>gotToNewPage(ticket.ticketId)} className='small-button'>{ticket.price} Rs</button>
           </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={photo2}></img>
-            <h4>Melodic Fusion: A Musical</h4>
-            <h4>Sunday, May 5th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>550 Rs</button>
-          </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p1}></img>
-            <h4>Harmonic Horizon</h4>
-            <h4>Monday, May 6th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p2}></img>
-            <h4>Melodic Mosaic</h4>
-            <h4>Tuesday, May 7th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
-        </div>
-        <h3 className='hh'>Latest Events </h3>
-        <div className='latest'>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p3}></img>
-            <h4>Aurora Melodica</h4>
-            <h4>Saturday, May 4th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p4}></img>
-            <h4>Vibrant Voices</h4>
-            <h4>Saturday, May 4th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p5}></img>
-            <h4>Celestial Harmonies</h4>
-            <h4>Saturday, May 4th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
-          <div>
-          <h3 className='head'>Music Concert</h3>
-            <img className='photos' src={p6}></img>
-            <h4>Enchanted Echoes</h4>
-            <h4>Saturday, May 4th, 2024</h4>
-            <button onClick={gotToNewPage} className='small-button'>500 Rs</button>
-          </div>
+          ))}
         </div>
         <h3 className='hh'>Upcoming Events </h3>
         <div className='Upcoming'>
